@@ -1,8 +1,11 @@
+import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { useContext } from 'react';
 import { useState } from 'react';
+import { makeRequest } from '../../../axios';
 import { AuthContext } from '../../context/AuthContext';
 import './comments.scss';
+import moment from 'moment/moment';
 
 // dummy data
 const comments = [
@@ -25,20 +28,36 @@ const comments = [
 ];
 
 // show all comments of this post
-const Comments = () => {    
+const Comments = ({postId}) => {    
+
+    // render comment like posts
+    // send the postId to server to get the relation with the post at comment
+    const { isLoading, error, data } = useQuery(['comments'], () => 
+        makeRequest.get('/comments?postId=' + postId).then((res) => {
+            return res.data;
+        })
+    );
+
+    console.log(data);
+
 
     const { currentUser } = useContext(AuthContext);
     
-    const commentSlide = comments.map((comment) => (
-        <div className="comment">
-            <img src={comment.profilePicture} alt="" />
-            <div className="info">
-                <span>{comment.name}</span>
-                <p>{comment.desc}</p>
+    const commentSlide = error 
+        ? 'Something went wrong' 
+        : isLoading 
+        ? 'loading' 
+        : data.map((comment) => (
+            <div className="comment">
+                <img src={comment.profilePicture} alt="" />
+                <div className="info">
+                    <span>{comment.name}</span>
+                    <p>{comment.desc}</p>
+                </div>
+                <span className='date'>{moment(comment.createdAt).fromNow()}</span>
             </div>
-            <span className='date'>1 hour ago</span>
-        </div>
-    ))
+        )
+    )
 
     return (
         <div className='comments'>

@@ -1,8 +1,43 @@
-import React from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
 import { Link } from 'react-router-dom'
 import './register.scss';
 
 const Register = () => {
+
+    const [inputs, setInputs] = useState({
+        username: '',
+        email: '',
+        password: '',
+        name: ''
+    });
+
+    const [error, setError] = useState(null);
+
+    // get all inputs by only time
+    // get the inputs by name in input with value 
+    const handlerChange = (event) => {
+        setInputs((prev) => ({ 
+            ...prev, 
+            [event.target.name]: event.target.value
+        }))
+    }
+
+    const handlerClick = async (event) => {
+        event.preventDefault();
+
+        console.log(inputs);
+
+        try {
+            await axios.post('http://localhost:8800/api/auth/register', inputs);
+        }
+
+        catch (error) {
+            console.log(error);
+            setError(error.response.data);
+        };
+    }
+
     return (
         <div className='register'>
             <div className='card'>
@@ -26,11 +61,32 @@ const Register = () => {
                 <div className='right'>
                     <h1>Register</h1>
                     <form action="">
-                        <input type="text"placeholder='Username' />
-                        <input type="mail" placeholder='Email' />
-                        <input type="password" placeholder='Password' />
-                        <input type="text" placeholder='Name' />
-                        <button>Register</button>
+                        <input 
+                            type="text"
+                            placeholder='Username' 
+                            name='username' 
+                            onChange={handlerChange} 
+                        />
+                        <input 
+                            type="mail" 
+                            placeholder='Email' 
+                            name='email' 
+                            onChange={handlerChange}
+                        />
+                        <input 
+                            type="password" 
+                            placeholder='Password' 
+                            name='password' 
+                            onChange={handlerChange} 
+                        />
+                        <input 
+                            type="text" 
+                            placeholder='Name' 
+                            name='name' 
+                            onChange={handlerChange} 
+                        />
+                        {error && error}
+                        <button onClick={handlerClick}>Register</button>
                     </form>
                 </div>
 

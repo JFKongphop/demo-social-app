@@ -16,6 +16,7 @@ import Home from './pages/home/Home';
 import Login from './pages/login/Login';
 import Profile from './pages/profile/Profile';
 import Register from './pages/register/Register';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import './style.scss'
 
@@ -25,8 +26,11 @@ function App() {
     // check status of new or old user
     const { currentUser } = useContext(AuthContext);
     const { darkMode } = useContext(DarkModeContext);
+    // console.log(currentUser);
 
-    console.log(darkMode);
+    // console.log(darkMode);
+
+    const queryClient = new QueryClient()
 
     
 
@@ -34,17 +38,19 @@ function App() {
     // then the home page is outlet in the middle of all bars
     const Layout = () => {
         return (
-            <div className={`theme-${darkMode ? 'dark' : 'light'}`}>
-                <Navbar/>
-                <div style={{ display: 'flex'}}>
-                    <LeftBar/>
-                    <div style={{ flex: 6 }}>
-                        <Outlet/>
+            <QueryClientProvider client={queryClient}>
+                <div className={`theme-${darkMode ? 'dark' : 'light'}`}>
+                    <Navbar/>
+                    <div style={{ display: 'flex'}}>
+                        <LeftBar/>
+                        <div style={{ flex: 6 }}>
+                            <Outlet/>
+                        </div>
+                        
+                        <RightBar/>
                     </div>
-                    
-                    <RightBar/>
                 </div>
-            </div>
+            </QueryClientProvider>
         )
     }
 

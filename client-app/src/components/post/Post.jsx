@@ -8,6 +8,7 @@ import './post.scss';
 import { Link } from 'react-router-dom';
 import Comments from '../comments/Comments';
 import { useState } from 'react';
+import moment from "moment/moment";
 
 // show of each post
 const Post = ({post}) => {
@@ -37,7 +38,7 @@ const Post = ({post}) => {
                             >
                                 <span className='name'>{post.name}</span>
                             </Link>
-                            <span className="date">1 min ago</span>
+                            <span className="date">{moment(post.createdAt).fromNow()}</span>
                         </div>
                     </div>
                     <MoreHorizIcon />
@@ -46,7 +47,7 @@ const Post = ({post}) => {
                 {/* image and description */}
                 <div className="content">
                     <p>{post.desc}</p>
-                    <img src={post.img} alt="" />
+                    <img src={'./upload/' + post.img} alt="" />
                 </div>
 
                 {/* comment like and share */}
@@ -67,7 +68,7 @@ const Post = ({post}) => {
                         12 Share
                     </div>
                 </div>
-                {commnetOpen && <Comments/>}
+                {commnetOpen && <Comments postId={post.id}/>}
             </div>
         </div>
     )
