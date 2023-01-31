@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 import { useContext } from 'react';
 import { useState } from 'react';
@@ -30,6 +30,8 @@ const comments = [
 // show all comments of this post
 const Comments = ({postId}) => {    
 
+    const [desc, setDesc] = useState('');
+
     // render comment like posts
     // send the postId to server to get the relation with the post at comment
     const { isLoading, error, data } = useQuery(['comments'], () => 
@@ -38,11 +40,36 @@ const Comments = ({postId}) => {
         })
     );
 
-    console.log(data);
+    const queryClient = useQueryClient();
+
+    // send comment request by react query
+    const mutation = useMutation((newComment) => {
+            return makeRequest.post('/comments', newComment)
+        },
+        {
+            onSuccess: () => {
+                queryClient.invalidateQueries(['comments']);
+            },
+        }
+    );
+
+    const handleClick = async (event) => {
+        event.preventDefault();
+
+        // send data to server
+        mutation.mutate({
+            desc,
+            postId
+        })
+
+        // clear value 
+        setDesc('');
+    }
 
 
     const { currentUser } = useContext(AuthContext);
     
+    // mapping the comment to slide it like post 
     const commentSlide = error 
         ? 'Something went wrong' 
         : isLoading 
@@ -63,8 +90,13 @@ const Comments = ({postId}) => {
         <div className='comments'>
             <div className="write">
                 <img src={currentUser.profilePic} alt="" />
-                <input type="text" placeholder='comment'/>
-                <button>Send</button>
+                <input 
+                    type="text" 
+                    placeholder='comment'
+                    value={desc}
+                    onChange={e => setDesc(e.target.value)}
+                />
+                <button onClick={handleClick}>Send</button>
             </div>
             {commentSlide}
         </div>

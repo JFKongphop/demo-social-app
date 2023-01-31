@@ -32,7 +32,7 @@ function App() {
 
     const queryClient = new QueryClient()
 
-    
+    console.log(currentUser);
 
     // encapsulate of home page by all bars when 
     // then the home page is outlet in the middle of all bars

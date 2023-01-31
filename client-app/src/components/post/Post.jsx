@@ -9,15 +9,60 @@ import { Link } from 'react-router-dom';
 import Comments from '../comments/Comments';
 import { useState } from 'react';
 import moment from "moment/moment";
+import { useQuery } from '@tanstack/react-query'
+import { makeRequest } from '../../../axios';
+import { useContext } from 'react';
+import { AuthContext } from '../../context/AuthContext';
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+
+
 
 // show of each post
 const Post = ({post}) => {
     const [commnetOpen, setCommmentOpen] =  useState(false);
-
-    const liked = false;
+    const { currentUser } = useContext(AuthContext);
 
     const toggleComment = () => {
         setCommmentOpen(!commnetOpen)
+    }
+
+    // loading likes
+    const { isLoading, error, data } = useQuery(['likes', post.id], () => 
+        makeRequest.get('/likes?postId=' + post.id).then((res) => {
+            return res.data;
+        })
+    );
+
+    const likeData = error 
+    ? 'Something went wrong!' 
+    : isLoading 
+    ? 'loading' 
+    : data
+    console.log(likeData);
+
+    const queryClient = useQueryClient();
+
+    // like this post or dislike
+    const mutation = useMutation((liked) => {
+            // if it like before another time click is dislike
+            // send postId to server
+            if (liked) return makeRequest.delete('/likes?postId=' + post.id);
+
+            // like if not my postId in  this post
+            return makeRequest.post('/likes', { postId: post.id });
+        },
+        {
+            onSuccess: () => {
+                queryClient.invalidateQueries(['likes']);
+            },
+        }
+    );
+
+    const handleLike = (event) => {
+        event.preventDefault();
+
+        // checking before dislike that before this we like this post
+        mutation.mutate(likeData.includes(currentUser.id))
     }
 
     return (
@@ -53,11 +98,18 @@ const Post = ({post}) => {
                 {/* comment like and share */}
                 <div className="info">
                     <div className="item">
-                        {liked ? 
-                            <FavoriteOutlinedIcon /> :
-                            <FavoriteBorderOutlinedIcon />
+                        {
+                            // to checking self like
+                            likeData.includes(currentUser.id) 
+                            ? <FavoriteOutlinedIcon 
+                                style={{color: 'red'}}
+                                onClick={handleLike}
+                            /> 
+                            : <FavoriteBorderOutlinedIcon 
+                                onClick={handleLike}
+                            />
                         }
-                        12 Likes
+                        {likeData.length} Likes
                     </div>
                     <div className="item" onClick={toggleComment}>
                         <TextsmsOutlinedIcon />
