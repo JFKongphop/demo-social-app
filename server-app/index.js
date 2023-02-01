@@ -6,7 +6,8 @@ const authRoutes  = require('./routers/auth');
 const userRoutes = require('./routers/users');
 const postRoutes  = require('./routers/posts');
 const commentRoutes  = require('./routers/comments');
-const likeRoutes  = require('./routers/likes');
+const likeRoutes = require('./routers/likes');
+const relationshipRoutes = require('./routers/relationships')
 const multer = require('multer');
 
 
@@ -46,6 +47,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/likes', likeRoutes);
+app.use('/api/relationships', relationshipRoutes);
 
 
 app.listen(8800, () => {

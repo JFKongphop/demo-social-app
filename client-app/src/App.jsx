@@ -17,7 +17,7 @@ import Login from './pages/login/Login';
 import Profile from './pages/profile/Profile';
 import Register from './pages/register/Register';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-
+import Cookies from 'js-cookie'
 import './style.scss'
 
 
@@ -26,13 +26,12 @@ function App() {
     // check status of new or old user
     const { currentUser } = useContext(AuthContext);
     const { darkMode } = useContext(DarkModeContext);
+
     // console.log(currentUser);
 
     // console.log(darkMode);
 
     const queryClient = new QueryClient()
-
-    console.log(currentUser);
 
     // encapsulate of home page by all bars when 
     // then the home page is outlet in the middle of all bars
@@ -57,11 +56,11 @@ function App() {
     // when it not auth is redirect login page
     // otherwise, passing auth redirect home page by children
     const ProtectedRoute = ({ children }) => {
-        if (!currentUser) {
-            return <Navigate to='/login' />;
+        if (currentUser) {
+            return children;
         }
 
-        return children;
+        return <Navigate to='/login' />;
     }
     
     // Pages at the Outlet is in children array

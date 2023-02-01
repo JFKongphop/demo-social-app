@@ -6,15 +6,16 @@ import { makeRequest } from '../../../axios';
 
 
 
-const Posts = () => {
+const Posts = ({userId}) => {
+    // show only me and who following
     const { isLoading, error, data } = useQuery(['posts'], () => 
-        makeRequest.get('/posts').then((res) => {
+        makeRequest.get('/posts?userId=' + userId).then((res) => {
             return res.data;
             
         })
     )
 
-    console.log(data);
+    //console.log(data);
 
 
     // show all the post that occur

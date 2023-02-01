@@ -4,6 +4,8 @@ const moment = require('moment');
 
 
 exports.getPosts = (req, res) => {
+
+    const userId = req.query.userId;
     const token = req.cookies.accessToken;
 
     if (!token) return res.status(401).json('Not logged in!');
@@ -17,14 +19,48 @@ exports.getPosts = (req, res) => {
         // followedUserId is FRIENDS
         // relationships is contain me with who mine folllowing
         // respectively by date
-        const q = `
-            SELECT p.*, u.id AS userId, name, profilePic FROM posts AS p JOIN users AS u ON (u.id = p.userId)
-            LEFT JOIN relationships AS r ON (p.userId = r.followedUserId) WHERE r.followerUserId = ? 
-            OR p.userId = ? ORDER BY p.createdAt DESC
-        `;
+        // if send the userId to this route that use open profile page
+        // else all post
+        // const q = userId 
+        // ? 
+        // `
+        //     SELECT p.*, u.id AS userId, name, profilePic FROM posts AS p JOIN users AS u ON (u.id = p.userId)
+        //     WHERE p.userId = ?
+        // `
+        // : 
+        // `
+        //     SELECT p.*, u.id AS userId, name, profilePic FROM posts AS p JOIN users AS u ON (u.id = p.userId)
+        //     LEFT JOIN relationships AS r ON (p.userId = r.followedUserId) WHERE r.followerUserId = ? 
+        //     OR p.userId = ? ORDER BY p.createdAt DESC
+        // `;
+
+        let values;
+        let q = '';
+        if (userId === 'undefined') {
+            values = [userInfo.id, userInfo.id];
+            q = `
+                SELECT p.*, u.id AS userId, name, profilePic FROM posts AS p JOIN users AS u ON (u.id = p.userId)
+                LEFT JOIN relationships AS r ON (p.userId = r.followedUserId) WHERE r.followerUserId = ? 
+                OR p.userId = ? ORDER BY p.createdAt DESC
+            `;
+        }
+
+        else {
+            values = [userId];
+            q = `
+                SELECT p.*, u.id AS userId, name, profilePic FROM posts AS p JOIN users AS u ON (u.id = p.userId)
+                WHERE p.userId = ? ORDER BY p.createdAt DESC
+            `
+        }
+        // const values = userId ? [userId] : [userInfo.id, userInfo.id]
+        // console.log('values' ,values);
+        // console.log([userInfo.id, userInfo.id]);
         
-        console.log(userInfo.id);
-        db.query(q, [userInfo.id, userInfo.id], (err, data) => {
+        //console.log('hello' ,userInfo.id);
+        console.log('values' ,values);
+        console.log('userId', userId);
+        
+        db.query(q, values, (err, data) => {
             if (err) return res.status(500).json(err);
 
             //console.log(data);
@@ -71,3 +107,26 @@ exports.addPost = (req, res) => {
     })
 }
 
+exports.deletePost = (req, res) => {
+    const token = req.cookies.accessToken;
+
+    if (!token) return res.status(401).json('Not logged in!');
+
+    jwt.verify(token, 'liveSocial', (err, userInfo) => {
+        if (err) return res.status(403).json('Token is invalid');
+    
+        // DELETE the post by get userId from who post the post
+        // and the post is matching with creator
+        const q = 
+            "DELETE FROM posts WHERE `id` = ? AND `userId` = ?";
+        
+        console.log('pp', req.params.id);
+        db.query(q, [req.params.id, userInfo.id], (err, data) => {
+            if (err) return res.status(500).json(err);
+
+            if (data.affectedRows > 0) return res.status(200).json("Post has been deleted.");
+
+            return res.status(403).json("You can delete only your post!");
+        })
+    })
+}

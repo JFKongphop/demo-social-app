@@ -20,6 +20,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 // show of each post
 const Post = ({post}) => {
     const [commnetOpen, setCommmentOpen] =  useState(false);
+    const [menuOpen, setMenuOpen] = useState(false);
+
     const { currentUser } = useContext(AuthContext);
 
     const toggleComment = () => {
@@ -38,12 +40,13 @@ const Post = ({post}) => {
     : isLoading 
     ? 'loading' 
     : data
-    console.log(likeData);
+    //console.log(likeData);
 
     const queryClient = useQueryClient();
 
     // like this post or dislike
-    const mutation = useMutation((liked) => {
+    const mutation = useMutation((liked) => 
+        {
             // if it like before another time click is dislike
             // send postId to server
             if (liked) return makeRequest.delete('/likes?postId=' + post.id);
@@ -58,12 +61,34 @@ const Post = ({post}) => {
         }
     );
 
+
     const handleLike = (event) => {
         event.preventDefault();
 
-        // checking before dislike that before this we like this post
+        // check you not like yet
         mutation.mutate(likeData.includes(currentUser.id))
     }
+
+
+    // delete the post
+    const deleteMutation = useMutation((postId) => 
+        {
+            // like if not my postId in  this post
+            return makeRequest.delete('/posts/' + postId);
+        },
+        {
+            onSuccess: () => {
+                queryClient.invalidateQueries(['posts']);
+            },
+        }
+    );
+
+    // get the data and send it to the top of deleteMutation
+    const handleDelete = () => {
+        if (!window.confirm('Do you want to delete')) return;
+        deleteMutation.mutate(post.id)
+    }
+
 
     return (
         <div className='post'>
@@ -72,10 +97,14 @@ const Post = ({post}) => {
                 {/* imamgeUser name and time */}
                 <div className="user">
                     <div className="userInfo">
-                        <img src={post.profilePic} alt="" />
+                        <img src={
+                            post.profilePic 
+                            ? '/upload/' + post.profilePic 
+                            : post.profilePic} alt="" 
+                        />
                         <div className="detail">
                             <Link 
-                                to={`/profile/${post.id}`}
+                                to={`/profile/${post.userId}`}
                                 style={{
                                     textDecoration: 'none',
                                     color: 'inherit'
@@ -86,7 +115,11 @@ const Post = ({post}) => {
                             <span className="date">{moment(post.createdAt).fromNow()}</span>
                         </div>
                     </div>
-                    <MoreHorizIcon />
+                    {/* will add the cnofirm when delete */}
+                    <MoreHorizIcon onClick={()=>setMenuOpen(!menuOpen)}/>
+                    {(menuOpen && post.userId === currentUser.id) 
+                        && <button onClick={handleDelete}>delete</button>
+                    }
                 </div>
 
                 {/* image and description */}
