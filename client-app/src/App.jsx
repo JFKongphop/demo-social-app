@@ -17,21 +17,31 @@ import Login from './pages/login/Login';
 import Profile from './pages/profile/Profile';
 import Register from './pages/register/Register';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import Cookies from 'js-cookie'
+// import Cookies from 'js-cookie'
+//import { Cookies } from 'react-cookie';
+import Cookies from 'universal-cookie';
+ 
+
 import './style.scss'
+import { useEffect } from 'react';
 
 
 function App() {
+    const cookies = new Cookies;
 
     // check status of new or old user
     const { currentUser } = useContext(AuthContext);
     const { darkMode } = useContext(DarkModeContext);
+    const [cookie, setCookie] = useState(cookies.get('accessToken'));
+    
+    useEffect(() => {
+        const a = cookies.get('accessToken')
+        setCookie(a);
+    }, [cookie])
 
-    // console.log(currentUser);
 
-    // console.log(darkMode);
-
-    const queryClient = new QueryClient()
+    const queryClient = new QueryClient();
+    
 
     // encapsulate of home page by all bars when 
     // then the home page is outlet in the middle of all bars
@@ -56,7 +66,7 @@ function App() {
     // when it not auth is redirect login page
     // otherwise, passing auth redirect home page by children
     const ProtectedRoute = ({ children }) => {
-        if (currentUser) {
+        if (currentUser && cookie) {
             return children;
         }
 

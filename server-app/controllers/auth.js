@@ -67,9 +67,10 @@ exports.login = (req, res) => {
 
         // send all data this user accept password
         // but all data is set in token that can access by cookie
-        res.cookie('accessToken', token, {
-            httpOnly: true
-        }).status(200).json(others)
+        // {
+        //     httpOnly: true
+        // }
+        res.cookie('accessToken', token).status(200).json(others)
     })
 }
 
