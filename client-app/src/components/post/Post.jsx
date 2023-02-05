@@ -1,21 +1,16 @@
-import React from 'react';
+import { useState, useContext } from 'react';
+import { Link } from 'react-router-dom';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
 import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined";
 import TextsmsOutlinedIcon from "@mui/icons-material/TextsmsOutlined";
 import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import './post.scss';
-import { Link } from 'react-router-dom';
-import Comments from '../comments/Comments';
-import { useState } from 'react';
 import moment from "moment/moment";
-import { useQuery } from '@tanstack/react-query'
 import { makeRequest } from '../../../axios';
-import { useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext';
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-
-
+import Comments from '../comments/Comments';
+import './post.scss';
 
 // show of each post
 const Post = ({post}) => {
@@ -125,7 +120,7 @@ const Post = ({post}) => {
                 {/* image and description */}
                 <div className="content">
                     <p>{post.desc}</p>
-                    <img src={'./upload/' + post.img} alt="" />
+                    <img src={'/upload/' + post.img} alt="" />
                 </div>
 
                 {/* comment like and share */}

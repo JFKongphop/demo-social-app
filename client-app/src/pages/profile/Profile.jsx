@@ -25,33 +25,26 @@ const Profile = () => {
 
     // to toggle update
     const [openUpdate, setOpenUpdate] = useState(false);
+    const { currentUser} = useContext(AuthContext);
 
     const openUpdateHandle = (status) => {
         setOpenUpdate(status)
     }
 
-
-
-    const { currentUser} = useContext(AuthContext);
-
     // get userId from the url by router
     const userId = parseInt(useLocation().pathname.split('/')[2]);
-    //console.log(userId);
     const { isLoading, error, data } = useQuery(['user'], () => 
         makeRequest.get('/users/find/' + userId).then((res) => {
             return res.data;
         })
     );
 
-    
     const profileData = error
     ? 'Something went wrong!' 
     : isLoading
     ? 'loading'
     : data
         
-    console.log(profileData);
-
 
     // get followe status that we follow other
     // by userId that send to server
@@ -66,9 +59,6 @@ const Profile = () => {
     : isLoadingR
     ? 'loading'
     : dataR
-
-    console.log(relationshipData);
-
 
 
     // follow user atprofile add follow
@@ -174,4 +164,4 @@ const Profile = () => {
     )
 }
 
-export default Profile
+export default Profile;

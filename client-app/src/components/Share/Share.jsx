@@ -1,13 +1,11 @@
-import "./share.scss";
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useState, useContext } from "react";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { AuthContext } from "../../context/AuthContext";
+import { makeRequest } from "../../../axios";
 import Image from "../../assets/img.png";
 import Map from "../../assets/map.png";
 import Friend from "../../assets/friend.png";
-import { useContext } from "react";
-import { AuthContext } from "../../context/AuthContext";
-import { useState } from "react";
-import { makeRequest } from "../../../axios";
-
+import "./share.scss";
 
 
 const Share = () => {
@@ -66,7 +64,7 @@ const Share = () => {
                 <div className="top">
                     <div className="left">
                         <img
-                            src={currentUser.profilePic}
+                            src={'./upload/' + currentUser.profilePic}
                             alt=""
                         />
                         <input 

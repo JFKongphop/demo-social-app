@@ -1,15 +1,13 @@
 import { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import './update.scss';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { makeRequest } from '../../../axios';
+import './update.scss';
 
 
 const Update = ({ onOpenUpdate, user }) => {
 
-    // file input
     const [cover, setCover] = useState(null);
     const [profile, setProfile] = useState(null);
-    // texts input 
     const [texts, setTexts] = useState({
         name: '',
         city: '',
@@ -31,11 +29,12 @@ const Update = ({ onOpenUpdate, user }) => {
     }
 
 
+    // get input 
     const handleChange = (event) => {
         setTexts((prev) => ({ 
             ...prev, 
             [event.target.name]: event.target.value
-        }))
+        }));
     }
 
     const queryClient = useQueryClient();
@@ -55,38 +54,15 @@ const Update = ({ onOpenUpdate, user }) => {
     const handleClick = async (event) => {
         event.preventDefault();
 
-        // bug profile and cover is switch
-        // // set url of cover and profile picture
-        // let coverUrl
-        // let profileUrl
-
-        // // upload after set the url
-        // // if user is not update new that use same pic
-        // coverUrl = cover ? await upload(cover) : user.coverPic;
-        // profileUrl = profile ? await upload(profile) : user.profilePic;
-        // console.log(coverUrl);
-
-        // mutation.mutate({
-        //     ...texts,
-        //     coverPic: coverUrl,
-        //     profilePic: profileUrl
-        // })
-
         let coverUrl;
         let profileUrl;
         coverUrl = cover ? await upload(cover) : user.coverPic;
         profileUrl = profile ? await upload(profile) : user.profilePic;
-        console.log('coverUrl', coverUrl);
-        console.log('profileUrl', profileUrl);
-
-        //console.log(user);
-
         
         mutation.mutate({ ...texts, coverPic: coverUrl, profilePic: profileUrl });
 
         // close the update by send props
         onOpenUpdate(false);
-
     }
 
     return (

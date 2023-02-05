@@ -34,7 +34,7 @@ const Login = () => {
 
         try {
             await login(inputs);
-            navigate('/')
+            await navigate('/');
         }
 
         catch (error) {

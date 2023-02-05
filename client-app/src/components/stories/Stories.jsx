@@ -1,4 +1,3 @@
-import React from 'react';
 import { useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import './stories.scss';
@@ -40,7 +39,7 @@ const Stories = () => {
     return (
         <div className='stories'>
             <div className="story">
-                <img src={currentUser.profilePic} alt="" />
+                <img src={'/upload/' + currentUser.profilePic} alt="" />
                 <span>{currentUser.name}</span>
                 <button>+</button>
             </div>
@@ -49,4 +48,4 @@ const Stories = () => {
     )
 }
 
-export default Stories
+export default Stories;

@@ -17,8 +17,6 @@ import Login from './pages/login/Login';
 import Profile from './pages/profile/Profile';
 import Register from './pages/register/Register';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-// import Cookies from 'js-cookie'
-//import { Cookies } from 'react-cookie';
 import Cookies from 'universal-cookie';
  
 
@@ -62,6 +60,7 @@ function App() {
             </QueryClientProvider>
         )
     }
+
 
     // when it not auth is redirect login page
     // otherwise, passing auth redirect home page by children
